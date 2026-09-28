@@ -539,7 +539,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 288246138}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 691e5c72f712c5147be1d36e96f5ce4f, type: 3}
   m_Name: 
@@ -690,7 +690,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 300563162}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 691e5c72f712c5147be1d36e96f5ce4f, type: 3}
   m_Name: 
@@ -1022,7 +1022,14 @@ MonoBehaviour:
   - {fileID: 39253671}
   spawnRadius: 8
   navMeshSurface: {fileID: 363005730}
+  doors:
+  - {fileID: 288246142}
+  - {fileID: 1929327976}
+  - {fileID: 300563166}
+  - {fileID: 2143026642}
+  doorOpenHeight: 4
   bakeInterval: 3
+  moveDuration: 1
 --- !u!4 &536429960
 Transform:
   m_ObjectHideFlags: 0
@@ -2369,7 +2376,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1929327972}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 691e5c72f712c5147be1d36e96f5ce4f, type: 3}
   m_Name: 
@@ -2688,7 +2695,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2143026638}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 691e5c72f712c5147be1d36e96f5ce4f, type: 3}
   m_Name: 
