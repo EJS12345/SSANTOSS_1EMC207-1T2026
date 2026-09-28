@@ -25,18 +25,16 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator InitializeGame()
     {
-        // Wait 1 second to guarantee the NavMesh is fully baked before agents try to move
+
         yield return new WaitForSeconds(1f);
 
-        // --- NEW CODE: Find and initialize any manually placed agents in the Hierarchy ---
+
         CrowdAgent[] manuallyPlacedAgents = FindObjectsByType<CrowdAgent>(FindObjectsSortMode.None);
         foreach (CrowdAgent agent in manuallyPlacedAgents)
         {
             agent.Initialize(islandTargets);
         }
-        // --------------------------------------------------------------------------------
 
-        // Spawn the remaining required agents
         for (int i = 0; i < agentCount; i++)
         {
             Transform randomIsland = islandTargets[Random.Range(0, islandTargets.Length)];

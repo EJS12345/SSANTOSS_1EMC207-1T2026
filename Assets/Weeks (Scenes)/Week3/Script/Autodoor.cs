@@ -15,7 +15,7 @@ public class AutoDoor : MonoBehaviour
 
     private void Start()
     {
-        // Automatically lock in the targets based on where the door is placed in the editor
+
         closedPosition = transform.position;
         openedPosition = closedPosition + new Vector3(0, openHeight, 0);
 

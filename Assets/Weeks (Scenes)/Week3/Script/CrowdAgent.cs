@@ -16,7 +16,7 @@ public class CrowdAgent : MonoBehaviour
         islands = islandTargets;
         defaultSpeed = agent.speed;
 
-        // Ensure you have created an area named "SlowArea" in the Navigation window
+
         slowAreaMask = 1 << NavMesh.GetAreaFromName("SlowArea");
 
         StartCoroutine(AgentRoutine());
@@ -24,7 +24,7 @@ public class CrowdAgent : MonoBehaviour
 
     private IEnumerator AgentRoutine()
     {
-        // Wait until the agent successfully snaps to the NavMesh
+
         yield return new WaitUntil(() => agent.isOnNavMesh);
 
         PickNewRandomIsland();
@@ -35,7 +35,7 @@ public class CrowdAgent : MonoBehaviour
 
             CheckSurfaceSpeed();
 
-            // Check if agent reached the island destination safely
+
             if (agent.isOnNavMesh && !agent.pathPending && agent.remainingDistance < 1f)
             {
                 PickNewRandomIsland();
@@ -49,7 +49,7 @@ public class CrowdAgent : MonoBehaviour
 
         if (agent.SamplePathPosition(NavMesh.AllAreas, 0.1f, out NavMeshHit navHit))
         {
-            // Halves speed if walking on the SlowArea
+
             if ((navHit.mask & slowAreaMask) != 0)
             {
                 agent.speed = defaultSpeed * 0.5f;
