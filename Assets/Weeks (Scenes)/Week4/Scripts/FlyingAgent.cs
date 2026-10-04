@@ -4,31 +4,37 @@ using System.Collections;
 
 public class FlyingAgent : MonoBehaviour
 {
-    [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private Transform[] groundRoute;
-    [SerializeField] private Transform[] airRoute;
+    private NavMeshAgent agent;
+    private Transform[] groundRoute;
+    private Transform[] airRoute;
 
-    [Header("Bonus")]
+    [Header("Info")]
     [Tooltip("Speed of the hover bobbing effect")]
-    [SerializeField] private float hoverSpeed = 2f;
+    public float hoverSpeed = 2f;
     [Tooltip("Height of the hover bobbing effect")]
-    [SerializeField] private float hoverHeight = 0.5f;
+    public float hoverHeight = 0.5f;
     [Tooltip("How smoothly the agent takes off and lands via Links")]
-    [SerializeField] private float linkTransitionDuration = 2f;
+    public float linkTransitionDuration = 2f;
 
     private float defaultBaseOffset;
     private bool isOnAirRoute = false;
     private int currentTargetIndex = 0;
     private bool isTraversingLink = false;
 
-    private void Start()
+    // The FlyingManager calls this when the agent spawns
+    public void Initialize(Transform[] assignedGroundRoute, Transform[] assignedAirRoute)
     {
+        agent = GetComponent<NavMeshAgent>();
+        groundRoute = assignedGroundRoute;
+        airRoute = assignedAirRoute;
+
         defaultBaseOffset = agent.baseOffset;
 
-        // Required for Bonus #2 (Smooth Link Traversal)
+        // Disable automatic link traversal so our custom smooth coroutine runs instead
         agent.autoTraverseOffMeshLink = false;
 
-        if (groundRoute.Length > 0)
+        // Start by heading to the first ground waypoint
+        if (groundRoute != null && groundRoute.Length > 0)
         {
             agent.SetDestination(groundRoute[0].position);
         }
@@ -36,7 +42,9 @@ public class FlyingAgent : MonoBehaviour
 
     private void Update()
     {
-        // Bonus 1: Modify vertical position using baseOffset (Hover Effect)[cite: 72]
+        if (agent == null) return;
+
+        // Bonus 1: Modify vertical position using baseOffset (Hover Effect)
         agent.baseOffset = defaultBaseOffset + (Mathf.Sin(Time.time * hoverSpeed) * hoverHeight);
 
         // Standard Waypoint Movement
@@ -45,7 +53,7 @@ public class FlyingAgent : MonoBehaviour
             Transform[] currentRoute = isOnAirRoute ? airRoute : groundRoute;
             currentTargetIndex++;
 
-            // Switch routes when reaching the end of the current route[cite: 71]
+            // Switch routes when reaching the end of the current route
             if (currentTargetIndex >= currentRoute.Length)
             {
                 isOnAirRoute = !isOnAirRoute;
@@ -53,7 +61,10 @@ public class FlyingAgent : MonoBehaviour
                 currentRoute = isOnAirRoute ? airRoute : groundRoute;
             }
 
-            agent.SetDestination(currentRoute[currentTargetIndex].position);
+            if (currentRoute.Length > 0)
+            {
+                agent.SetDestination(currentRoute[currentTargetIndex].position);
+            }
         }
 
         // Intercept NavMesh Link for smooth takeoff/landing
@@ -72,7 +83,7 @@ public class FlyingAgent : MonoBehaviour
         Vector3 endPos = data.endPos;
         float time = 0f;
 
-        // Bonus 2: Smooth over terrain (Gradual vertical transition)[cite: 71]
+        // Bonus 2: Smooth over terrain (Gradual vertical transition)
         while (time < 1f)
         {
             time += Time.deltaTime / linkTransitionDuration;

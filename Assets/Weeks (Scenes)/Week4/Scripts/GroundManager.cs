@@ -4,8 +4,13 @@ using System.Collections;
 public class GroundManager : MonoBehaviour
 {
     [SerializeField] private GameObject groundAgentPrefab;
-    [SerializeField] private int agentCount = 100;
 
+    [Header("Spawn Settings")]
+    [SerializeField] private int agentCount = 100;
+    [Tooltip("Time in seconds to wait between spawning each ground agent")]
+    [SerializeField] private float spawnDelay = 0.2f;
+
+    [Header("Routes")]
     [Tooltip("Drag your GroundWaypoints here")]
     [SerializeField] private Transform[] groundRoute;
     [SerializeField] private Transform spawnPoint;
@@ -23,10 +28,13 @@ public class GroundManager : MonoBehaviour
             GameObject newAgent = Instantiate(groundAgentPrefab, spawnPoint.position, Quaternion.identity);
 
             // 2. Hand the route data to the GroundAgent script
-            newAgent.GetComponent<GroundAgent>().Initialize(groundRoute);
+            if (newAgent.TryGetComponent<GroundAgent>(out GroundAgent agentScript))
+            {
+                agentScript.Initialize(groundRoute);
+            }
 
-            // 3. Wait a moment before spawning the next one
-            yield return new WaitForSeconds(0.1f);
+            // 3. Wait the specified delay before spawning the next agent
+            yield return new WaitForSeconds(spawnDelay);
         }
     }
 }
