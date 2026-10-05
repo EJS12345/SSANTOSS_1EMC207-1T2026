@@ -21,7 +21,7 @@ public class FlyingManager : MonoBehaviour
 
     private void Start()
     {
-        // Start the Coroutine to handle multiple spawns over time
+
         StartCoroutine(SpawnFlyingAgentsRoutine());
     }
 
@@ -29,13 +29,13 @@ public class FlyingManager : MonoBehaviour
     {
         for (int i = 0; i < agentCount; i++)
         {
-            // 1. Spawn the flying agent
+
             GameObject newAgent = Instantiate(flyingAgentPrefab, spawnPoint.position, Quaternion.identity);
 
-            // 2. Hand both route data arrays to the FlyingAgent script
+
             newAgent.GetComponent<FlyingAgent>().Initialize(groundRoute, airRoute);
 
-            // 3. Wait briefly before spawning the next agent
+
             yield return new WaitForSeconds(spawnDelay);
         }
     }

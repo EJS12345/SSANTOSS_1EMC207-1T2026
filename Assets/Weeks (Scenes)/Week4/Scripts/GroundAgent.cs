@@ -7,7 +7,6 @@ public class GroundAgent : MonoBehaviour
     private Transform[] route;
     private int targetIndex = 0;
 
-    // The GameManager calls this when the agent spawns
     public void Initialize(Transform[] assignedRoute)
     {
         agent = GetComponent<NavMeshAgent>();
@@ -15,13 +14,27 @@ public class GroundAgent : MonoBehaviour
 
         if (route != null && route.Length > 0)
         {
+
+            float closestDistance = Mathf.Infinity;
+            int closestIndex = 0;
+
+            for (int i = 0; i < route.Length; i++)
+            {
+                float distanceToWaypoint = Vector3.Distance(transform.position, route[i].position);
+                if (distanceToWaypoint < closestDistance)
+                {
+                    closestDistance = distanceToWaypoint;
+                    closestIndex = i;
+                }
+            }
+
+            targetIndex = closestIndex;
             agent.SetDestination(route[targetIndex].position);
         }
     }
 
     private void Update()
     {
-        // Patrol in a loop
         if (agent != null && !agent.pathPending && agent.remainingDistance < 0.5f)
         {
             targetIndex = (targetIndex + 1) % route.Length;

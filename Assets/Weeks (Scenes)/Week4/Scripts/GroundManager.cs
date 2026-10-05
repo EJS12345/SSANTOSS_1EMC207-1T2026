@@ -24,16 +24,14 @@ public class GroundManager : MonoBehaviour
     {
         for (int i = 0; i < agentCount; i++)
         {
-            // 1. Spawn the agent
+
             GameObject newAgent = Instantiate(groundAgentPrefab, spawnPoint.position, Quaternion.identity);
 
-            // 2. Hand the route data to the GroundAgent script
             if (newAgent.TryGetComponent<GroundAgent>(out GroundAgent agentScript))
             {
                 agentScript.Initialize(groundRoute);
             }
 
-            // 3. Wait the specified delay before spawning the next agent
             yield return new WaitForSeconds(spawnDelay);
         }
     }
