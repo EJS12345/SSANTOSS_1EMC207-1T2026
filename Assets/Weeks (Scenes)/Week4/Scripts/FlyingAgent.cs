@@ -8,9 +8,12 @@ public class FlyingAgent : MonoBehaviour
     private Transform[] groundRoute;
     private Transform[] airRoute;
 
-    [Header("Bonuses (+10 Points)")]
+    [Header("Info")]
+    [Tooltip("Speed of the hover bobbing effect")]
     public float hoverSpeed = 2f;
+    [Tooltip("Height of the hover bobbing effect")]
     public float hoverHeight = 0.5f;
+    [Tooltip("How smoothly the agent takes off and lands via Links")]
     public float linkTransitionDuration = 2f;
 
     private float defaultBaseOffset;
@@ -25,26 +28,12 @@ public class FlyingAgent : MonoBehaviour
         airRoute = assignedAirRoute;
 
         defaultBaseOffset = agent.baseOffset;
+
         agent.autoTraverseOffMeshLink = false;
 
         if (groundRoute != null && groundRoute.Length > 0)
         {
-
-            float closestDistance = Mathf.Infinity;
-            int closestIndex = 0;
-
-            for (int i = 0; i < groundRoute.Length; i++)
-            {
-                float distanceToWaypoint = Vector3.Distance(transform.position, groundRoute[i].position);
-                if (distanceToWaypoint < closestDistance)
-                {
-                    closestDistance = distanceToWaypoint;
-                    closestIndex = i;
-                }
-            }
-
-            currentTargetIndex = closestIndex;
-            agent.SetDestination(groundRoute[currentTargetIndex].position);
+            agent.SetDestination(groundRoute[0].position);
         }
     }
 
@@ -52,9 +41,7 @@ public class FlyingAgent : MonoBehaviour
     {
         if (agent == null) return;
 
-
         agent.baseOffset = defaultBaseOffset + (Mathf.Sin(Time.time * hoverSpeed) * hoverHeight);
-
 
         if (!isTraversingLink && !agent.pathPending && agent.remainingDistance < 0.5f)
         {
