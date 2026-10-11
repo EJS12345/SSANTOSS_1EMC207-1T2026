@@ -26,10 +26,10 @@ public class SneekerAI : MonoBehaviour
 
     void Update()
     {
-        // 1. Check distance to the Guard
+        // Check distance to the Guard
         float distanceToGuard = Vector3.Distance(transform.position, guard.position);
 
-        // 2. Decide which state to be in
+        // Decide which state to be in
         if (distanceToGuard < fleeDistance)
         {
             currentState = SneekerState.Flee;
@@ -39,7 +39,7 @@ public class SneekerAI : MonoBehaviour
             currentState = SneekerState.Wander;
         }
 
-        // 3. Execute the current state
+        // Execute the current state
         switch (currentState)
         {
             case SneekerState.Wander:
@@ -79,7 +79,7 @@ public class SneekerAI : MonoBehaviour
         }
     }
 
-    // Helper method to find a valid random point on the baked NavMesh
+    // Method to find a valid random point on the baked NavMesh
     private Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)
     {
         Vector3 randDirection = Random.insideUnitSphere * dist;

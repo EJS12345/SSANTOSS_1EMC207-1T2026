@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // Right-click to move the player around the scene
+        // Right click to move the player around the scene
         if (Input.GetMouseButtonDown(1))
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);

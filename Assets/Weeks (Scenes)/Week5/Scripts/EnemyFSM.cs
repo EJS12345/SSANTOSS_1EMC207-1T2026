@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 public class EnemyFSM : MonoBehaviour
 {
-    // Define the limited states of the machine[cite: 87, 96]
+    // Define the limited states of the machine
     public enum State { Patrol, Alert, Attack }
     public State currentState = State.Patrol;
 
@@ -17,7 +17,7 @@ public class EnemyFSM : MonoBehaviour
 
     [Header("Radii & Ranges")]
     public float alertRadius = 8f;
-    public float attackRadius = 12f; // Slightly larger so it doesn't jitter rapidly
+    public float attackRadius = 12f; // Slightly larger so it doesn't move rapidly
 
     [Header("Timers")]
     public float timeToAttack = 2f;
@@ -39,7 +39,7 @@ public class EnemyFSM : MonoBehaviour
 
     void Update()
     {
-        // Only ONE state is active at any given time[cite: 88]
+        // Only one state is active at any given time
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         switch (currentState)
@@ -58,18 +58,18 @@ public class EnemyFSM : MonoBehaviour
 
     void UpdatePatrol(float distance)
     {
-        // Requirement 4: Cycle through points and loop back[cite: 96]
+        // Cycle through points and loop back
         if (!agent.pathPending && agent.remainingDistance < 0.5f && waypoints.Length > 0)
         {
             currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
             agent.SetDestination(waypoints[currentWaypointIndex].position);
         }
 
-        // Requirement 5: Transition to alert if player gets near[cite: 96]
+        // Transition to alert if player gets near
         if (distance <= alertRadius)
         {
             currentState = State.Alert;
-            agent.SetDestination(transform.position); // Requirement 6: Stay in position[cite: 96]
+            agent.SetDestination(transform.position); // Stay in position
             alertTimer = 0f;
             calmTimer = 0f;
         }
@@ -79,7 +79,7 @@ public class EnemyFSM : MonoBehaviour
     {
         if (distance <= alertRadius)
         {
-            // Requirement 7: Transition to attack if player stays near for a period of time[cite: 96]
+            // Transition to attack if player stays near for a period of time
             alertTimer += Time.deltaTime;
             calmTimer = 0f;
 
@@ -90,7 +90,7 @@ public class EnemyFSM : MonoBehaviour
         }
         else
         {
-            // Requirement 8: Transition back to patrol if player gets out of radius long enough[cite: 96]
+            // Transition back to patrol if player gets out of radius long enough
             calmTimer += Time.deltaTime;
             alertTimer = 0f;
 
@@ -104,11 +104,11 @@ public class EnemyFSM : MonoBehaviour
 
     void UpdateAttack(float distance)
     {
-        // Requirement 9: Chase the player[cite: 96]
+        // Chase the player
         agent.SetDestination(player.position);
         lastKnownPosition = player.position;
 
-        // Requirement 10: If player gets out of range, go back to alert and move to last known position[cite: 96]
+        // If player gets out of range, go back to alert and move to last known position
         if (distance > attackRadius)
         {
             currentState = State.Alert;
@@ -118,7 +118,7 @@ public class EnemyFSM : MonoBehaviour
         }
     }
 
-    // Optional: Draws circles in the editor so you can visualize the ranges
+    // Draws circles in the editor to visualize the ranges
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
