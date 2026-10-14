@@ -168,4 +168,4 @@ MonoBehaviour:
   guard: {fileID: 0}
   wanderRadius: 6
   wanderTimer: 5
-  fleeDistance: 9.55
+  fleeDistance: 7
