@@ -161,7 +161,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  alertRadius: 1.78
-  attackRadius: 1.8
+  - {fileID: 0}
+  alertRadius: 3.41
+  attackRadius: 3.59
   timeToAttack: 2
   timeToPatrol: 3
