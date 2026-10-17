@@ -13,8 +13,8 @@ TagManager:
   - UI
   - GroundAgent
   - FlyingAgent
-  - 
-  - 
+  - Enemy
+  - Obstacles
   - 
   - 
   - 

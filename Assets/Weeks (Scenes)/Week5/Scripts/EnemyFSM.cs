@@ -3,8 +3,7 @@ using UnityEngine.AI;
 
 public class EnemyFSM : MonoBehaviour
 {
-    // Define the limited states of the machine
-    public enum State { Patrol, Alert, Attack }
+    public enum State { Patrol, Alert, Chase }
     public State currentState = State.Patrol;
 
     [Header("References")]
@@ -15,86 +14,71 @@ public class EnemyFSM : MonoBehaviour
     public Transform[] waypoints;
     private int currentWaypointIndex = 0;
 
-    [Header("Radii & Ranges")]
-    public float alertRadius = 8f;
-    public float attackRadius = 12f; // Slightly larger so it doesn't move rapidly
+    [Header("Vision (Visual Detection Method 2)")]
+    public float viewRadius = 10f;
+    [Range(0, 360)] public float viewAngle = 90f;
+    public LayerMask obstacleMask; // Set this to "Obstacles" in inspector
 
-    [Header("Timers")]
-    public float timeToAttack = 2f;
-    public float timeToPatrol = 3f;
-
-    private float alertTimer = 0f;
-    private float calmTimer = 0f;
-    private Vector3 lastKnownPosition;
+    [Header("Alert & Chase Settings")]
+    public float investigateWaitTime = 3f;
+    private float waitTimer = 0f;
+    private Vector3 targetInvestigatePos;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-
-        if (waypoints.Length > 0)
-        {
-            agent.SetDestination(waypoints[0].position);
-        }
+        if (waypoints.Length > 0) agent.SetDestination(waypoints[0].position);
     }
 
     void Update()
     {
-        // Only one state is active at any given time
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
         switch (currentState)
         {
             case State.Patrol:
-                UpdatePatrol(distanceToPlayer);
+                UpdatePatrol();
                 break;
             case State.Alert:
-                UpdateAlert(distanceToPlayer);
+                UpdateAlert();
                 break;
-            case State.Attack:
-                UpdateAttack(distanceToPlayer);
+            case State.Chase:
+                UpdateChase();
                 break;
         }
     }
 
-    void UpdatePatrol(float distance)
+    void UpdatePatrol()
     {
-        // Cycle through points and loop back
+        // Cycle through route[cite: 114]
         if (!agent.pathPending && agent.remainingDistance < 0.5f && waypoints.Length > 0)
         {
             currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
             agent.SetDestination(waypoints[currentWaypointIndex].position);
         }
 
-        // Transition to alert if player gets near
-        if (distance <= alertRadius)
+        // If player is within FOV, and there are no obstructions, go straight to chase[cite: 114]
+        if (CanSeePlayer())
         {
-            currentState = State.Alert;
-            agent.SetDestination(transform.position); // Stay in position
-            alertTimer = 0f;
-            calmTimer = 0f;
+            currentState = State.Chase;
         }
     }
 
-    void UpdateAlert(float distance)
+    void UpdateAlert()
     {
-        if (distance <= alertRadius)
-        {
-            // Transition to attack if player stays near for a period of time
-            alertTimer += Time.deltaTime;
-            calmTimer = 0f;
+        // AI investigates location where a sound was last done[cite: 114]
+        agent.SetDestination(targetInvestigatePos);
 
-            if (alertTimer >= timeToAttack)
-            {
-                currentState = State.Attack;
-            }
+        // If a player is within FOV while AI is investigating, head straight to chase[cite: 114]
+        if (CanSeePlayer())
+        {
+            currentState = State.Chase;
+            return;
         }
-        else
-        {
-            // Transition back to patrol if player gets out of radius long enough
-            calmTimer += Time.deltaTime;
-            alertTimer = 0f;
 
-            if (calmTimer >= timeToPatrol)
+        // Wait at the spot for a few seconds, then go back to patrol
+        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        {
+            waitTimer += Time.deltaTime;
+            if (waitTimer >= investigateWaitTime)
             {
                 currentState = State.Patrol;
                 agent.SetDestination(waypoints[currentWaypointIndex].position);
@@ -102,28 +86,55 @@ public class EnemyFSM : MonoBehaviour
         }
     }
 
-    void UpdateAttack(float distance)
+    void UpdateChase()
     {
-        // Chase the player
         agent.SetDestination(player.position);
-        lastKnownPosition = player.position;
 
-        // If player gets out of range, go back to alert and move to last known position
-        if (distance > attackRadius)
+        // If player goes out of vision, go back to alert state (investigate last known pos)[cite: 114]
+        if (!CanSeePlayer())
         {
             currentState = State.Alert;
-            agent.SetDestination(lastKnownPosition);
-            alertTimer = 0f;
-            calmTimer = 0f;
+            targetInvestigatePos = player.position;
+            waitTimer = 0f;
         }
     }
 
-    // Draws circles in the editor to visualize the ranges
-    private void OnDrawGizmosSelected()
+    // Called by the PlayerStealth script when making a noise
+    public void HearSound(Vector3 soundPos)
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, alertRadius);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRadius);
+        // If a player makes a sound near AI, go to alert state[cite: 114]
+        if (currentState == State.Patrol)
+        {
+            currentState = State.Alert;
+            targetInvestigatePos = soundPos;
+            waitTimer = 0f;
+        }
+        else if (currentState == State.Alert)
+        {
+            targetInvestigatePos = soundPos; // Update location if hearing more sounds
+        }
+    }
+
+    // Visual FOV Detection logic using Vector3.Angle and a Raycast[cite: 107, 112]
+    bool CanSeePlayer()
+    {
+        Vector3 dirToPlayer = (player.position - transform.position).normalized;
+        float dstToPlayer = Vector3.Distance(transform.position, player.position);
+
+        // Check if player is near enough[cite: 103]
+        if (dstToPlayer <= viewRadius)
+        {
+            // Check if player is within the angle in front of AI[cite: 103, 107]
+            if (Vector3.Angle(transform.forward, dirToPlayer) < viewAngle / 2)
+            {
+                // Raycast to check if vision is being obstructed[cite: 107, 112]
+                // We lift the raycast slightly up (Vector3.up) so it shoots from the chest, not the feet.
+                if (!Physics.Raycast(transform.position + Vector3.up, dirToPlayer, dstToPlayer, obstacleMask))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

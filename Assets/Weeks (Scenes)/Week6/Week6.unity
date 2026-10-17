@@ -131,6 +131,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: barrel_blue
       objectReference: {fileID: 0}
+    - target: {fileID: 4618147178984376318, guid: 320d084e7b8466c4db6dd82e0b9d3fb6, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 8967094642178240612, guid: 320d084e7b8466c4db6dd82e0b9d3fb6, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.297
@@ -235,6 +239,10 @@ PrefabInstance:
     - target: {fileID: 1848017472597490147, guid: bb918d67769455c428d36c17fa172713, type: 3}
       propertyPath: m_Name
       value: hightcylindertank_red
+      objectReference: {fileID: 0}
+    - target: {fileID: 1848017472597490147, guid: bb918d67769455c428d36c17fa172713, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2849588047371682537, guid: bb918d67769455c428d36c17fa172713, type: 3}
       propertyPath: m_LocalScale.x
@@ -557,7 +565,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.016666668
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 376d7ef8dd94e17428725ac19ad5f4ca, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 9b9e8a4409f5d8c4ea8986f60f654dd2, type: 2}
   m_BuildHeightMesh: 0
 --- !u!4 &742438218
 Transform:
@@ -585,6 +593,10 @@ PrefabInstance:
     - target: {fileID: 553800339767005276, guid: a1f0ea35c6b2bf948954ed66ca7dbf54, type: 3}
       propertyPath: m_Name
       value: bigtank_orange
+      objectReference: {fileID: 0}
+    - target: {fileID: 553800339767005276, guid: a1f0ea35c6b2bf948954ed66ca7dbf54, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2565821118327771694, guid: a1f0ea35c6b2bf948954ed66ca7dbf54, type: 3}
       propertyPath: m_LocalScale.x
@@ -691,6 +703,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: smalltrashcan_metal
       objectReference: {fileID: 0}
+    - target: {fileID: 659303216048971741, guid: 70fa46ad27525d04dba76046fdc1dbc9, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 6921426307132094917, guid: 70fa46ad27525d04dba76046fdc1dbc9, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5156685
@@ -764,6 +780,10 @@ PrefabInstance:
     - target: {fileID: 1357037131130400367, guid: 7a17f6fa89a62d04faf48289e07bce2e, type: 3}
       propertyPath: m_Name
       value: woodenbox_x
+      objectReference: {fileID: 0}
+    - target: {fileID: 1357037131130400367, guid: 7a17f6fa89a62d04faf48289e07bce2e, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 9150499792419321911, guid: 7a17f6fa89a62d04faf48289e07bce2e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -878,6 +898,10 @@ PrefabInstance:
     - target: {fileID: 4415916230558959849, guid: ee7533ae95fdeba4984b9b4bbb8a203e, type: 3}
       propertyPath: m_Name
       value: box_opened
+      objectReference: {fileID: 0}
+    - target: {fileID: 4415916230558959849, guid: ee7533ae95fdeba4984b9b4bbb8a203e, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -997,7 +1021,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1.96, z: 1.16}
-  m_LocalScale: {x: 1.2758, y: 1.2758, z: 1.2758}
+  m_LocalScale: {x: 1.9794036, y: 1.9794036, z: 1.9794036}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1097,6 +1121,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: longtank_yellow
       objectReference: {fileID: 0}
+    - target: {fileID: 1210112351983221075, guid: cadae38cbe3f49943ba5c8ca5aed7390, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1116,7 +1144,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1153611329}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Background Assets
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1250,6 +1278,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: smallcrate_red
       objectReference: {fileID: 0}
+    - target: {fileID: 4410852021636583089, guid: ef87021b53a15cc4ca393441d3508bec, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1271,6 +1303,10 @@ PrefabInstance:
     - target: {fileID: 1357037131130400367, guid: 7a17f6fa89a62d04faf48289e07bce2e, type: 3}
       propertyPath: m_Name
       value: woodenbox_x
+      objectReference: {fileID: 0}
+    - target: {fileID: 1357037131130400367, guid: 7a17f6fa89a62d04faf48289e07bce2e, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 9150499792419321911, guid: 7a17f6fa89a62d04faf48289e07bce2e, type: 3}
       propertyPath: m_LocalScale.x
@@ -1397,6 +1433,10 @@ PrefabInstance:
     - target: {fileID: 6244990607943084722, guid: 71d3f33232d45204c80105132b09e0ce, type: 3}
       propertyPath: m_Name
       value: cylindertank_green
+      objectReference: {fileID: 0}
+    - target: {fileID: 6244990607943084722, guid: 71d3f33232d45204c80105132b09e0ce, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1578,6 +1618,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: locker1
       objectReference: {fileID: 0}
+    - target: {fileID: 226279359346862844, guid: c70267caa268fca44beb61a984d689f4, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 295545111672804366, guid: c70267caa268fca44beb61a984d689f4, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.9900002
@@ -1701,6 +1745,10 @@ PrefabInstance:
     - target: {fileID: 3781409511668079547, guid: 0464f35adb8b8db48aaf3487afcf1a84, type: 3}
       propertyPath: m_Name
       value: locker2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3781409511668079547, guid: 0464f35adb8b8db48aaf3487afcf1a84, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3846318843659235140, guid: 0464f35adb8b8db48aaf3487afcf1a84, type: 3}
       propertyPath: m_LocalScale.y
@@ -1829,6 +1877,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Guard
       objectReference: {fileID: 0}
+    - target: {fileID: 2247000309506705433, guid: d2fbdc0129d801a44ae9251a0057a996, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4119824497328877927, guid: d2fbdc0129d801a44ae9251a0057a996, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.4
@@ -1873,6 +1925,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1165322972}
+    - target: {fileID: 8917592810809297530, guid: d2fbdc0129d801a44ae9251a0057a996, type: 3}
+      propertyPath: viewAngle
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917592810809297530, guid: d2fbdc0129d801a44ae9251a0057a996, type: 3}
+      propertyPath: viewRadius
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8917592810809297530, guid: d2fbdc0129d801a44ae9251a0057a996, type: 3}
       propertyPath: 'waypoints.Array.data[0]'
       value: 
