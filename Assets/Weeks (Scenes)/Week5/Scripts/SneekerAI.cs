@@ -10,52 +10,66 @@ public class SneekerAI : MonoBehaviour
     public NavMeshAgent agent;
     public Transform guard;
 
+    [Header("Movement & Stealth")]
+    public float stealthSpeed = 2f;
+    public float normalSpeed = 5.5f;
+    public float soundRadius = 12f;
+    public bool isStealthing = false;
+
+    [HideInInspector] public float currentNoiseLevel = 0f;
+
     [Header("Wander Settings")]
-    public float wanderRadius = 10f;
-    public float wanderTimer = 3f;
+    public float wanderRadius = 6f;
+    public float wanderTimer = 5f;
     private float timer;
 
     [Header("Flee Settings")]
-    public float fleeDistance = 7f; // Distance at which Sneeker gets scared and runs
+    public float fleeDistance = 7f;
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
         timer = wanderTimer;
     }
 
     void Update()
     {
-        // Check distance to the Guard
+        if (guard == null) return;
+
         float distanceToGuard = Vector3.Distance(transform.position, guard.position);
 
-        // Decide which state to be in
         if (distanceToGuard < fleeDistance)
         {
             currentState = SneekerState.Flee;
+            isStealthing = false;
         }
         else
         {
             currentState = SneekerState.Wander;
+            if (timer >= wanderTimer)
+            {
+                isStealthing = Random.value > 0.5f;
+            }
         }
 
-        // Execute the current state
-        switch (currentState)
+        if (isStealthing)
         {
-            case SneekerState.Wander:
-                UpdateWander();
-                break;
-            case SneekerState.Flee:
-                UpdateFlee();
-                break;
+            agent.speed = stealthSpeed;
+            currentNoiseLevel = 0f;
         }
+        else
+        {
+            agent.speed = normalSpeed;
+            currentNoiseLevel = soundRadius;
+        }
+
+        if (currentState == SneekerState.Wander) UpdateWander();
+        else if (currentState == SneekerState.Flee) UpdateFlee();
     }
 
     void UpdateWander()
     {
         timer += Time.deltaTime;
-
-        // Pick a new random location on the NavMesh every few seconds
         if (timer >= wanderTimer)
         {
             Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
@@ -66,25 +80,19 @@ public class SneekerAI : MonoBehaviour
 
     void UpdateFlee()
     {
-        // Calculate the direction away from the guard
         Vector3 fleeDirection = transform.position - guard.position;
-
-        // Project that direction outwards to find a safe spot
         Vector3 safePosition = transform.position + fleeDirection.normalized * 5f;
 
-        // Ensure the safe spot is actually on the NavMesh before running there
         if (NavMesh.SamplePosition(safePosition, out NavMeshHit hit, 5f, NavMesh.AllAreas))
         {
             agent.SetDestination(hit.position);
         }
     }
 
-    // Method to find a valid random point on the baked NavMesh
     private Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)
     {
         Vector3 randDirection = Random.insideUnitSphere * dist;
         randDirection += origin;
-
         NavMesh.SamplePosition(randDirection, out NavMeshHit navHit, dist, layermask);
         return navHit.position;
     }

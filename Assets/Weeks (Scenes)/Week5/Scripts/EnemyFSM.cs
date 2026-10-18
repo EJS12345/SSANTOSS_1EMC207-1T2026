@@ -8,133 +8,216 @@ public class EnemyFSM : MonoBehaviour
 
     [Header("References")]
     public NavMeshAgent agent;
-    public Transform player;
+    public SneekerAI player;
+    public Renderer guardRenderer;
+    public Renderer visionConeRenderer;
+
+    [Header("Colors")]
+    public Material greenPatrolMat;
+    public Material yellowAlertMat;
+    public Material redChaseMat;
 
     [Header("Patrol Settings")]
     public Transform[] waypoints;
     private int currentWaypointIndex = 0;
 
-    [Header("Vision (Visual Detection Method 2)")]
-    public float viewRadius = 10f;
-    [Range(0, 360)] public float viewAngle = 90f;
-    public LayerMask obstacleMask; // Set this to "Obstacles" in inspector
+    [Header("Sensory Settings (Method 2)")]
+    public float visionRange = 12f;
+    public float fieldOfViewAngle = 90f;
+    public float catchDistance = 2.0f; // NEW: Distance at which Sneeker is caught
+    public LayerMask obstacleMask;
 
-    [Header("Alert & Chase Settings")]
-    public float investigateWaitTime = 3f;
-    private float waitTimer = 0f;
-    private Vector3 targetInvestigatePos;
+    [Header("Timers")]
+    public float investigateTime = 3f;
+    private float alertTimer = 0f;
+
+    private Vector3 investigateTarget;
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        if (waypoints.Length > 0) agent.SetDestination(waypoints[0].position);
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
+
+        ChangeColor(greenPatrolMat);
+
+        if (waypoints != null && waypoints.Length > 0)
+        {
+            agent.SetDestination(waypoints[0].position);
+        }
     }
 
     void Update()
     {
+        bool canSeePlayer = CheckVisualDetection();
+        bool canHearPlayer = CheckAuditoryDetection();
+
         switch (currentState)
         {
             case State.Patrol:
-                UpdatePatrol();
+                if (canSeePlayer)
+                {
+                    SwitchState(State.Chase);
+                }
+                else if (canHearPlayer)
+                {
+                    investigateTarget = player.transform.position;
+                    SwitchState(State.Alert);
+                }
+                else
+                {
+                    UpdatePatrol();
+                }
                 break;
+
             case State.Alert:
-                UpdateAlert();
+                if (canSeePlayer)
+                {
+                    SwitchState(State.Chase);
+                }
+                else
+                {
+                    UpdateAlert();
+                }
                 break;
+
             case State.Chase:
-                UpdateChase();
+                if (!canSeePlayer)
+                {
+                    investigateTarget = player.transform.position;
+                    SwitchState(State.Alert);
+                }
+                else
+                {
+                    UpdateChase();
+                }
                 break;
+        }
+    }
+
+    void SwitchState(State newState)
+    {
+        currentState = newState;
+
+        // Ensure the agent can move again when switching states
+        if (agent.isActiveAndEnabled) agent.isStopped = false;
+
+        if (newState == State.Patrol)
+        {
+            ChangeColor(greenPatrolMat);
+            if (waypoints != null && waypoints.Length > 0)
+            {
+                agent.SetDestination(waypoints[currentWaypointIndex].position);
+            }
+        }
+        else if (newState == State.Alert)
+        {
+            ChangeColor(yellowAlertMat);
+            agent.SetDestination(investigateTarget);
+            alertTimer = 0f;
+        }
+        else if (newState == State.Chase)
+        {
+            ChangeColor(redChaseMat);
         }
     }
 
     void UpdatePatrol()
     {
-        // Cycle through route[cite: 114]
-        if (!agent.pathPending && agent.remainingDistance < 0.5f && waypoints.Length > 0)
+        if (waypoints == null || waypoints.Length == 0) return;
+
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.5f)
         {
             currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
             agent.SetDestination(waypoints[currentWaypointIndex].position);
-        }
-
-        // If player is within FOV, and there are no obstructions, go straight to chase[cite: 114]
-        if (CanSeePlayer())
-        {
-            currentState = State.Chase;
         }
     }
 
     void UpdateAlert()
     {
-        // AI investigates location where a sound was last done[cite: 114]
-        agent.SetDestination(targetInvestigatePos);
-
-        // If a player is within FOV while AI is investigating, head straight to chase[cite: 114]
-        if (CanSeePlayer())
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.5f)
         {
-            currentState = State.Chase;
-            return;
-        }
-
-        // Wait at the spot for a few seconds, then go back to patrol
-        if (!agent.pathPending && agent.remainingDistance < 0.5f)
-        {
-            waitTimer += Time.deltaTime;
-            if (waitTimer >= investigateWaitTime)
+            alertTimer += Time.deltaTime;
+            if (alertTimer >= investigateTime)
             {
-                currentState = State.Patrol;
-                agent.SetDestination(waypoints[currentWaypointIndex].position);
+                SwitchState(State.Patrol);
             }
         }
     }
 
     void UpdateChase()
     {
-        agent.SetDestination(player.position);
-
-        // If player goes out of vision, go back to alert state (investigate last known pos)[cite: 114]
-        if (!CanSeePlayer())
+        if (player != null)
         {
-            currentState = State.Alert;
-            targetInvestigatePos = player.position;
-            waitTimer = 0f;
-        }
-    }
+            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
 
-    // Called by the PlayerStealth script when making a noise
-    public void HearSound(Vector3 soundPos)
-    {
-        // If a player makes a sound near AI, go to alert state[cite: 114]
-        if (currentState == State.Patrol)
-        {
-            currentState = State.Alert;
-            targetInvestigatePos = soundPos;
-            waitTimer = 0f;
-        }
-        else if (currentState == State.Alert)
-        {
-            targetInvestigatePos = soundPos; // Update location if hearing more sounds
-        }
-    }
-
-    // Visual FOV Detection logic using Vector3.Angle and a Raycast[cite: 107, 112]
-    bool CanSeePlayer()
-    {
-        Vector3 dirToPlayer = (player.position - transform.position).normalized;
-        float dstToPlayer = Vector3.Distance(transform.position, player.position);
-
-        // Check if player is near enough[cite: 103]
-        if (dstToPlayer <= viewRadius)
-        {
-            // Check if player is within the angle in front of AI[cite: 103, 107]
-            if (Vector3.Angle(transform.forward, dirToPlayer) < viewAngle / 2)
+            // NEW: If the Guard catches the Sneeker, freeze both of them in place.
+            if (distanceToPlayer <= catchDistance)
             {
-                // Raycast to check if vision is being obstructed[cite: 107, 112]
-                // We lift the raycast slightly up (Vector3.up) so it shoots from the chest, not the feet.
-                if (!Physics.Raycast(transform.position + Vector3.up, dirToPlayer, dstToPlayer, obstacleMask))
+                agent.isStopped = true;
+                if (player.agent != null) player.agent.isStopped = true;
+            }
+            else
+            {
+                agent.isStopped = false;
+                agent.SetDestination(player.transform.position);
+            }
+        }
+    }
+
+    // --- SENSORY CHECKS ---
+
+    bool CheckVisualDetection()
+    {
+        if (player == null) return false;
+
+        Vector3 origin = transform.position + Vector3.up * 1.0f;
+        Vector3 target = player.transform.position + Vector3.up * 0.5f;
+        Vector3 directionToPlayer = target - origin;
+        float distanceToPlayer = directionToPlayer.magnitude;
+
+        // NEW PROXIMITY OVERRIDE: If they are touching, the Guard automatically sees the Sneeker.
+        if (distanceToPlayer <= catchDistance)
+        {
+            return true;
+        }
+
+        if (distanceToPlayer <= visionRange)
+        {
+            float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+            if (angleToPlayer <= fieldOfViewAngle / 2f)
+            {
+                if (!Physics.Raycast(origin, directionToPlayer.normalized, distanceToPlayer, obstacleMask))
                 {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    bool CheckAuditoryDetection()
+    {
+        if (player == null) return false;
+
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        if (player.currentNoiseLevel > 0 && distanceToPlayer <= player.currentNoiseLevel)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    void ChangeColor(Material newMat)
+    {
+        if (newMat == null) return;
+
+        if (guardRenderer != null)
+        {
+            guardRenderer.material = newMat;
+        }
+
+        if (visionConeRenderer != null)
+        {
+            visionConeRenderer.material = newMat;
+        }
     }
 }
