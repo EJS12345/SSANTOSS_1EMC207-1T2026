@@ -24,7 +24,7 @@ public class EnemyFSM : MonoBehaviour
     [Header("Sensory Settings (Method 2)")]
     public float visionRange = 12f;
     public float fieldOfViewAngle = 90f;
-    public float catchDistance = 2.0f; // NEW: Distance at which Sneeker is caught
+    public float catchDistance = 2.0f;
     public LayerMask obstacleMask;
 
     [Header("Timers")]
@@ -97,7 +97,6 @@ public class EnemyFSM : MonoBehaviour
     {
         currentState = newState;
 
-        // Ensure the agent can move again when switching states
         if (agent.isActiveAndEnabled) agent.isStopped = false;
 
         if (newState == State.Patrol)
@@ -149,7 +148,6 @@ public class EnemyFSM : MonoBehaviour
         {
             float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
 
-            // NEW: If the Guard catches the Sneeker, freeze both of them in place.
             if (distanceToPlayer <= catchDistance)
             {
                 agent.isStopped = true;
@@ -163,8 +161,6 @@ public class EnemyFSM : MonoBehaviour
         }
     }
 
-    // --- SENSORY CHECKS ---
-
     bool CheckVisualDetection()
     {
         if (player == null) return false;
@@ -174,11 +170,7 @@ public class EnemyFSM : MonoBehaviour
         Vector3 directionToPlayer = target - origin;
         float distanceToPlayer = directionToPlayer.magnitude;
 
-        // NEW PROXIMITY OVERRIDE: If they are touching, the Guard automatically sees the Sneeker.
-        if (distanceToPlayer <= catchDistance)
-        {
-            return true;
-        }
+        if (distanceToPlayer <= catchDistance) return true;
 
         if (distanceToPlayer <= visionRange)
         {
@@ -196,28 +188,17 @@ public class EnemyFSM : MonoBehaviour
 
     bool CheckAuditoryDetection()
     {
-        if (player == null) return false;
+        if (player == null || player.currentNoiseLevel <= 0) return false;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-        if (player.currentNoiseLevel > 0 && distanceToPlayer <= player.currentNoiseLevel)
-        {
-            return true;
-        }
-        return false;
+        return distanceToPlayer <= player.currentNoiseLevel;
     }
 
     void ChangeColor(Material newMat)
     {
         if (newMat == null) return;
 
-        if (guardRenderer != null)
-        {
-            guardRenderer.material = newMat;
-        }
-
-        if (visionConeRenderer != null)
-        {
-            visionConeRenderer.material = newMat;
-        }
+        if (guardRenderer != null) guardRenderer.material = newMat;
+        if (visionConeRenderer != null) visionConeRenderer.material = newMat;
     }
 }

@@ -34,7 +34,7 @@ public class SneekerAI : MonoBehaviour
 
     void Update()
     {
-        if (guard == null) return;
+        if (guard == null || !agent.isActiveAndEnabled || agent.isStopped) return;
 
         float distanceToGuard = Vector3.Distance(transform.position, guard.position);
 
