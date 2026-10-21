@@ -1948,7 +1948,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2989657261904059477, guid: 3ce583600e35e4843a909e746dbc8a38, type: 3}
       propertyPath: currentState
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3359357788769159151, guid: 3ce583600e35e4843a909e746dbc8a38, type: 3}
       propertyPath: m_Name
