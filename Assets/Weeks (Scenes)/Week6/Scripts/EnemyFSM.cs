@@ -47,16 +47,17 @@ public class EnemyFSM : MonoBehaviour
 
         if (distanceToPlayer <= catchDistance)
         {
-            // If the player collected all 5 items, the Guard is destroyed!
-            if (GameManager2.Instance.hasAllObjectives)
+            // Check if the player has at least 1 power charge
+            if (GameManager2.Instance.powerCharges > 0)
             {
-                Debug.Log("Player has the power-up! Guard destroyed!");
-                Destroy(gameObject);
-                return; // Stop running the script since this object is now destroyed
+                Debug.Log("Player used a power charge! Guard destroyed!");
+                GameManager2.Instance.UsePower(); // Subtract 1 from the player's charges
+                Destroy(gameObject);              // Destroy the Guard
+                return;
             }
             else
             {
-                // Otherwise, the Player is caught.
+                // No charges left? The Player is caught.
                 GameManager2.Instance.GameOver();
                 return;
             }
@@ -125,7 +126,6 @@ public class EnemyFSM : MonoBehaviour
 
     void UpdateChase()
     {
-        // Distance catch logic was moved to Update(), so we only handle pathing here
         if (!CheckVisualDetection())
         {
             investigateTarget = player.transform.position;
