@@ -2266,7 +2266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager2
   collectedItems: 0
-  requiredItems: 5
+  requiredItems: 6
   hasAllObjectives: 0
   powerCharges: 0
   winPanel: {fileID: 68177049}
