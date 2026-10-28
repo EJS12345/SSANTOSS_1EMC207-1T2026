@@ -5,9 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Weeks (Scenes)/Week1/Week1 - NavmeshBasicAct.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Weeks (Scenes)/MIDTERMS (Week7)/Menu Scene.unity
+    guid: 28c474f614de7034aa8cfe638fffc2c1
+  - enabled: 1
+    path: Assets/Weeks (Scenes)/MIDTERMS (Week7)/Week 7.unity
+    guid: d9c76ab552cab354d867a76a3ad8afd5
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
